@@ -1,0 +1,37 @@
+.container {
+    width: 60%;
+    margin: auto;
+    padding: 20px;
+}
+
+h1 {
+    text-align: center;
+}
+
+form {
+    margin: 10px 0;
+}
+
+.task {
+    display: flex;
+    justify-content: space-between;
+    background-color: #f4f4f4;
+    padding: 10px;
+    border: 1px solid #ddd;
+    margin: 5px 0;
+}
+
+.sections {
+    text-align: center;
+    margin: 20px 0;
+}
+
+.sections a {
+    margin: 0 10px;
+    text-decoration: none;
+    color: #007bff;
+}
+
+.sections a:hover {
+    text-decoration: underline;
+}
