@@ -85,14 +85,10 @@ def main():
     chat_agent = QA_Agent()
     print("You are now conversing with your assistant. Good Luck!")
     print("On what thoughts do you want to discuss today: ")
-    while True:
-        prompt = input("Enter you query|('/exit' to quit session): ")
-        if prompt == "/exit":
-            print("You will have a fortuitous encounter soon, God Speed!")
-            break
-        response = chat_agent.agent_chat(prompt)
-        print(f"Assistant: {response}")
-        print("-"*30)
+    prompt = input("Enter you query|('/exit' to quit session): ")
+    response = chat_agent.agent_chat(prompt)
+    print(f"Assistant: {response}")
+    print("-"*30)
     chat_agent.save_history()
 
 if __name__ == "__main__":
