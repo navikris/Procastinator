@@ -61,6 +61,7 @@ def alert_user(tasks_with_deadlines):
     procrastination_messages = []
 
     for task in tasks_with_deadlines:
+        print(f"Task: {task['text']}, Deadline: {task['date']}")
         task_description = f"You have a task '{task['text']}' due on {task['date']}"
         procrastination_message = chat_agent.agent_chat(task_description)
         procrastination_messages.append(procrastination_message)
@@ -76,6 +77,7 @@ def home():
 
     # Check for upcoming deadlines and get procrastination messages
     upcoming_tasks = check_deadlines()
+    print("upcoming tasks")
     if upcoming_tasks:
         procrastination_messages = alert_user(upcoming_tasks)
     else:
