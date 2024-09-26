@@ -121,10 +121,14 @@ form.task-form button:hover {
 
 /* Procrastination Alerts Styles */
 .procrastination-alerts {
-    background-color: #f1c40f;
+    display: flex;
+    align-items: center;
+    background-color: #fff;
     padding: 15px;
     border-radius: 6px;
     margin-bottom: 20px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* Adding a shadow similar to the task list */
+    position: relative;
 }
 
 .procrastination-alerts h2 {
@@ -135,6 +139,7 @@ form.task-form button:hover {
 .procrastination-alerts ul {
     list-style-type: disc;
     padding-left: 20px;
+    margin-left: 20px;
 }
 
 .procrastination-alerts li {
