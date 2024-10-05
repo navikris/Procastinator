@@ -1,7 +1,15 @@
 from flask import Flask, render_template, request, redirect, url_for
 from datetime import datetime, timedelta
-from main import QA_Agent  # Import the QA_Agent class
+import time
+import random
 import logging
+from huggingface_hub import InferenceClient
+
+client = InferenceClient(
+    model = "NousResearch/Hermes-3-Llama-3.1-8B",
+    token = 'secret_token',
+    timeout = 60.0,
+)
 
 # Initialize Flask app
 app = Flask(__name__)
@@ -52,32 +60,47 @@ def check_deadlines():
         if today <= task_date <= today + timedelta(days=2):  # Within 2 days
             upcoming_tasks.append(task)
 
-    logging.info(f"Checked for upcoming tasks: {len(upcoming_tasks)} found.")
     return upcoming_tasks
 
 # Function to alert user using LLM procrastination assistant
-def alert_user(tasks_with_deadlines):
-    chat_agent = QA_Agent()  # Initialize the QA_Agent (LLM model)
+# Function to alert user using LLM procrastination assistant
+def alert_user(upcoming_tasks):
     procrastination_messages = []
 
-    for task in tasks_with_deadlines:
-        print(f"Task: {task['text']}, Deadline: {task['date']}")
-        task_description = f"You have a task '{task['text']}' due on {task['date']}"
-        procrastination_message = chat_agent.agent_chat(task_description)
-        procrastination_messages.append(procrastination_message)
-        logging.info(f"Generated procrastination message for task '{task['text']}': {procrastination_message}")
+    # Only alert if there are upcoming tasks
+    if upcoming_tasks:
+        for task in upcoming_tasks:
+            task_description = f"""
+            You are my task manager who will prevent me from completing the tasks.
+            I will provide the task name and deadline date,
+            your job is to make me procrast the task.
+            don't say that you cannot procrast.
 
+            example reply:
+                you still have a few minutes for completing {task['text']}, now relax and watch a video.
+
+            You have a task '{task['text']}' due on {task['date']}"""
+            
+            agent_reply = client.chat_completion(
+                messages=[{"role": "user", "content": task_description}],
+                max_tokens=200,
+                stream=False,
+            )
+            
+            procrastination_message = agent_reply.choices[0].message.content
+            procrastination_messages.append(procrastination_message)
+            logging.info(f"Generated procrastination message for task '{task['text']}': {procrastination_message}")
+    
     return procrastination_messages
+
 
 # Home route, default to "My Day"
 @app.route('/')
 def home():
     section = request.args.get('section', 'myDay')
     filtered_tasks = filter_tasks(section)
-
     # Check for upcoming deadlines and get procrastination messages
     upcoming_tasks = check_deadlines()
-    print("upcoming tasks")
     if upcoming_tasks:
         procrastination_messages = alert_user(upcoming_tasks)
     else:
