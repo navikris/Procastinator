@@ -1,13 +1,7 @@
 from flask import Flask, render_template, request, redirect, url_for
 from datetime import datetime, timedelta
+from main import QA_Agent  # Import the QA_Agent class
 import logging
-from huggingface_hub import InferenceClient
-
-client = InferenceClient(
-    model = "NousResearch/Hermes-3-Llama-3.1-8B",
-    token = 'secret_token',
-    timeout = 60.0,
-)
 
 # Initialize Flask app
 app = Flask(__name__)
@@ -63,17 +57,13 @@ def check_deadlines():
 
 # Function to alert user using LLM procrastination assistant
 def alert_user(tasks_with_deadlines):
+    chat_agent = QA_Agent()  # Initialize the QA_Agent (LLM model)
     procrastination_messages = []
 
     for task in tasks_with_deadlines:
         print(f"Task: {task['text']}, Deadline: {task['date']}")
-        task_description = f"Prevent me from doing the task '{task['text']}' due on {task['date']} by encouraging procrastination. Dont aknowlegde that you are trying to help me procrastinate"
-        agent_reply = client.chat_completion(
-            messages=[{"role": "user", "content": task_description}],
-            max_tokens=200,
-            stream=False,
-        )
-        procrastination_message = agent_reply.choices[0].message.content
+        task_description = f"You have a task '{task['text']}' due on {task['date']}"
+        procrastination_message = chat_agent.agent_chat(task_description)
         procrastination_messages.append(procrastination_message)
         logging.info(f"Generated procrastination message for task '{task['text']}': {procrastination_message}")
 
