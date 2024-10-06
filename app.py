@@ -63,7 +63,6 @@ def check_deadlines():
     return upcoming_tasks
 
 # Function to alert user using LLM procrastination assistant
-# Function to alert user using LLM procrastination assistant
 def alert_user(upcoming_tasks):
     procrastination_messages = []
 
@@ -163,6 +162,3 @@ def update_preferences():
 
     return redirect(url_for('home'))
 
-if __name__ == '__main__':
-    logging.info("Starting Flask app...")
-    app.run(debug=True)
