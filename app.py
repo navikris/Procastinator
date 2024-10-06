@@ -100,10 +100,10 @@ def home():
     filtered_tasks = filter_tasks(section)
     # Check for upcoming deadlines and get procrastination messages
     upcoming_tasks = check_deadlines()
-    if upcoming_tasks:
-        procrastination_messages = alert_user(upcoming_tasks)
-    else:
-        procrastination_messages = None
+    procrastination_messages = None
+    if upcoming_tasks: # commented out till HF_oAuth is working
+        pass
+        # procrastination_messages = alert_user(upcoming_tasks)
 
     logging.info(f"Rendering home page for section: {section}, tasks count: {len(filtered_tasks)}")
     return render_template('index.html', tasks=filtered_tasks, section=section,
