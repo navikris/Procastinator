@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Task Manager - {{ section.capitalize() }}</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+</head>
+<body>
+    <div class="container">
+        <h1>Task Manager - {{ section.capitalize() }}</h1>
+
+        <!-- Form to Add Task -->
+        <form action="{{ url_for('add_task') }}" method="POST" class="task-form">
+            <input type="text" name="todo" placeholder="Enter task" required>
+            <input type="date" name="duedate" required>
+            <button type="submit">Add Task</button>
+        </form>
+
+        <!-- Task List based on section -->
+        <div id="TaskContainer">
+            {% if tasks %}
+                {% for task in tasks %}
+                <div class="task">
+                    <form action="{{ url_for('toggle_task', task_id=task.id) }}" method="POST" class="toggle-task-form">
+                        <input type="checkbox" name="completed" onchange="this.form.submit()" {% if task.completed %} checked {% endif %}>
+                        <span class="task-text" {% if task.completed %} style="text-decoration: line-through;" {% endif %}>
+                            {{ task.text }}
+                        </span>
+                    </form>
+                    <p class="task-date">Due: {{ task.date }}</p>
+                    <form action="{{ url_for('delete_task', task_id=task.id) }}" method="POST" class="delete-task-form">
+                        <button type="submit">Delete</button>
+                    </form>
+                </div>
+                {% endfor %}
+            {% else %}
+                <p>No tasks available for this section.</p>
+            {% endif %}
+        </div>
+
+        <!-- Links for Sections -->
+        <div class="sections">
+            <a href="{{ url_for('home', section='myDay') }}">My Day</a> |
+            <a href="{{ url_for('home', section='thisWeek') }}">This Week</a> |
+            <a href="{{ url_for('home', section='thisMonth') }}">This Month</a> |
+            <a href="{{ url_for('home', section='other') }}">All Tasks</a>
+        </div>
+
+        <!-- Procrastination Messages (from QA_Agent) -->
+        {% if procrastination_messages %}
+        <div class="procrastination-alerts">
+            <h2>Ooh 😮:</h2>
+            <ul>
+                {% for message in procrastination_messages %}
+                <li>{{ message }}</li>
+                {% endfor %}
+            </ul>
+        </div>
+        {% endif %}
+
+        <!-- User Preferences -->
+        <div class="user-preferences">
+            <h2>User Profile</h2>
+            <form action="{{ url_for('update_preferences') }}" method="POST">
+                <label>Name: <input type="text" name="name" value="{{ user_preferences.name }}"></label>
+                <label>Email: <input type="email" name="email" value="{{ user_preferences.email }}"></label>
+                <button type="submit">Update Profile</button>
+            </form>
+        </div>
+
+        <!-- Button to Delete All Tasks -->
+        <form action="{{ url_for('delete_all_tasks') }}" method="POST">
+            <button class="delete-all-btn" type="submit">Delete All Tasks</button>
+        </form>
+    </div>
+</body>
+</html>

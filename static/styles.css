@@ -1,0 +1,220 @@
+/* Global Styles */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: Arial, sans-serif;
+    background-color: #f4f4f9;
+    color: #333;
+    line-height: 1.6;
+}
+
+.container {
+    max-width: 900px;
+    margin: 50px auto;
+    padding: 20px;
+    background-color: #fff;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    border-radius: 8px;
+}
+
+h1 {
+    text-align: center;
+    margin-bottom: 20px;
+    font-size: 2.5rem;
+    color: #2C3E50;
+}
+
+form.task-form {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 30px;
+}
+
+form.task-form input[type="text"],
+form.task-form input[type="date"] {
+    width: 40%;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+}
+
+form.task-form button {
+    padding: 10px 20px;
+    background-color: #3498db;
+    color: #fff;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+form.task-form button:hover {
+    background-color: #2980b9;
+}
+
+/* Task Container Styles */
+#TaskContainer {
+    margin-bottom: 20px;
+}
+
+.task {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 15px;
+    background-color: #ecf0f1;
+    border-radius: 6px;
+    margin-bottom: 10px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.task-text {
+    font-size: 1.2rem;
+    color: #2c3e50;
+}
+
+.task-date {
+    font-size: 0.9rem;
+    color: #7f8c8d;
+}
+
+.toggle-task-form input[type="checkbox"] {
+    transform: scale(1.3);
+    margin-right: 10px;
+}
+
+.delete-task-form button {
+    background-color: #e74c3c;
+    color: #fff;
+    border: none;
+    padding: 8px 12px;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.delete-task-form button:hover {
+    background-color: #c0392b;
+}
+
+/* Sections Navigation Styles */
+.sections {
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+.sections a {
+    text-decoration: none;
+    color: #3498db;
+    font-weight: bold;
+    margin: 0 10px;
+    transition: color 0.3s ease;
+}
+
+.sections a:hover {
+    color: #2980b9;
+}
+
+/* Procrastination Alerts Styles */
+.procrastination-alerts {
+    display: flex;
+    align-items: center;
+    background-color: #fff;
+    padding: 15px;
+    border-radius: 6px;
+    margin-bottom: 20px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* Adding a shadow similar to the task list */
+    position: relative;
+}
+
+.procrastination-alerts h2 {
+    margin-bottom: 10px;
+    font-size: 1.5rem;
+}
+
+.procrastination-alerts ul {
+    list-style-type: disc;
+    padding-left: 20px;
+    margin-left: 20px;
+}
+
+.procrastination-alerts li {
+    margin-bottom: 5px;
+    font-size: 1.1rem;
+}
+
+/* User Preferences Styles */
+.user-preferences {
+    margin-bottom: 20px;
+}
+
+.user-preferences h2 {
+    font-size: 1.5rem;
+    margin-bottom: 10px;
+}
+
+.user-preferences form {
+    display: flex;
+    flex-direction: column;
+}
+
+.user-preferences form label {
+    margin-bottom: 10px;
+}
+
+.user-preferences form input[type="text"],
+.user-preferences form input[type="email"] {
+    padding: 8px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    width: 100%;
+}
+
+.user-preferences form button {
+    padding: 10px 20px;
+    background-color: #2ecc71;
+    color: #fff;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.user-preferences form button:hover {
+    background-color: #27ae60;
+}
+
+/* Delete All Tasks Button Styles */
+.delete-all-btn {
+    background-color: #e74c3c;
+    color: #fff;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    display: block;
+    width: 100%;
+    text-align: center;
+    transition: background-color 0.3s ease;
+}
+
+.delete-all-btn:hover {
+    background-color: #c0392b;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    form.task-form input[type="text"],
+    form.task-form input[type="date"] {
+        width: 48%;
+    }
+
+    form.task-form {
+        flex-direction: column;
+        gap: 10px;
+    }
+}
