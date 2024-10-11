@@ -1,13 +1,15 @@
-from flask import Flask, render_template, request, redirect, url_for
+from flask import Flask, render_template, request, redirect, url_for,session
 from datetime import datetime, timedelta
 import time
 import random
 import logging
 from huggingface_hub import InferenceClient
+import os
+access_token = os.environ.get('HF_TOKEN')
 
 client = InferenceClient(
     model = "NousResearch/Hermes-3-Llama-3.1-8B",
-    token = 'secret_token',
+    token = access_token,
     timeout = 60.0,
 )
 
@@ -16,7 +18,7 @@ app = Flask(__name__)
 app.secret_key = 'secret_key'
 
 # Temporary storage (equivalent to localStorage)
-tasks = {}
+user_tasks = {}
 user_preferences = {"name": "John Doe", "email": "john@gmail.com"}
 
 # Logging setup
@@ -36,6 +38,9 @@ def filter_tasks(section):
     end_of_month = (start_of_month + timedelta(days=32)).replace(day=1) - timedelta(days=1)
 
     filtered_tasks = []
+    user = session.get('user', 'guest')
+    tasks = user_tasks.get(user, {})
+
     for task in tasks.values():
         task_date = datetime.strptime(task['date'], '%Y-%m-%d').date()
 
@@ -54,6 +59,8 @@ def filter_tasks(section):
 def check_deadlines():
     today = datetime.now().date()
     upcoming_tasks = []
+    user = session.get('user', 'guest')
+    tasks = user_tasks.get(user, {})
 
     for task in tasks.values():
         task_date = datetime.strptime(task['date'], '%Y-%m-%d').date()
@@ -106,9 +113,11 @@ def home():
     else:
         procrastination_messages = None
 
+    user = session.get('user', 'guest')
+
     logging.info(f"Rendering home page for section: {section}, tasks count: {len(filtered_tasks)}")
     return render_template('index.html', tasks=filtered_tasks, section=section,
-                           user_preferences=user_preferences, procrastination_messages=procrastination_messages)
+                           user_preferences=user, procrastination_messages=procrastination_messages)
 
 # Route to add a new task
 @app.route('/add_task', methods=['POST'])
@@ -118,48 +127,55 @@ def add_task():
 
     if task_text and due_date:
         task_id = generate_numeric_id()
-        tasks[task_id] = {
+        user = session.get('user', 'guest')
+
+        if user not in user_tasks:
+            user_tasks[user] = {}
+        user_tasks[user][task_id] = {
             "id": task_id,
             "text": task_text,
             "date": due_date,
             "completed": False
         }
-        logging.info(f"Task added: {task_text}, due date: {due_date}")
+        logging.info(f"Task added: {task_text}, due date: {due_date} for user: {user}")
 
     return redirect(url_for('home'))
 
 # Route to mark a task as complete/incomplete
 @app.route('/toggle_task/<int:task_id>', methods=['POST'])
 def toggle_task(task_id):
-    task = tasks.get(task_id)
+    user = session.get('user', 'guest')
+    task = user_tasks.get(user, {}).get(task_id)
     if task:
         task['completed'] = not task['completed']
-        logging.info(f"Toggled task '{task['text']}' to {'completed' if task['completed'] else 'incomplete'}")
+        logging.info(f"Toggled task '{task['text']}' for user '{user}' to {'completed' if task['completed'] else 'incomplete'}")
 
     return redirect(url_for('home'))
 
 # Route to delete a task
 @app.route('/delete_task/<int:task_id>', methods=['POST'])
 def delete_task(task_id):
-    if task_id in tasks:
-        logging.info(f"Task deleted: {tasks[task_id]['text']}")
-        tasks.pop(task_id, None)
+    user = session.get('user', 'guest')
+    if task_id in user_tasks.get(user, {}):
+        logging.info(f"Task deleted: {user_tasks[user][task_id]['text']} for user {user}")
+        user_tasks[user].pop(task_id, None)
 
     return redirect(url_for('home'))
 
 # Route to delete all tasks
 @app.route('/delete_all_tasks', methods=['POST'])
 def delete_all_tasks():
-    tasks.clear()
-    logging.info("All tasks deleted.")
+    user = session.get('user', 'guest')
+    user_tasks[user] = {}
+    logging.info(f"All tasks deleted for user {user}.")
     return redirect(url_for('home'))
 
 # Route to update user preferences
 @app.route('/update_preferences', methods=['POST'])
 def update_preferences():
-    user_preferences['name'] = request.form.get('name', 'John Doe')
-    user_preferences['email'] = request.form.get('email', 'john@gmail.com')
-    logging.info(f"Updated user preferences: {user_preferences}")
+    session['user'] = request.form.get('name', 'guest')
+    user_email = request.form.get('email', 'guest@gmail.com')
+    logging.info(f"Updated user preferences: {session['user']}, {user_email}")
 
     return redirect(url_for('home'))
 
