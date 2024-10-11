@@ -179,6 +179,6 @@ def update_preferences():
 
     return redirect(url_for('home'))
 
-if __name__ == '__main__':
-    logging.info("Starting Flask app...")
-    app.run(debug=True)
+# if __name__ == '__main__':
+#     logging.info("Starting Flask app...")
+#     app.run(debug=True)
