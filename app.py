@@ -7,11 +7,15 @@ from huggingface_hub import InferenceClient
 import os
 access_token = os.environ.get('HF_TOKEN')
 
-client = InferenceClient(
-    model = "NousResearch/Hermes-3-Llama-3.1-8B",
-    token = access_token,
-    timeout = 60.0,
-)
+try:
+    client = InferenceClient(
+        model = "NousResearch/Hermes-3-Llama-3.1-8B",
+        token = access_token,
+        timeout = 60.0,
+    )
+except:
+    logging.info("Unable to connect to HF Inference API")
+    client = None
 
 # Initialize Flask app
 app = Flask(__name__)
@@ -88,13 +92,17 @@ def alert_user(upcoming_tasks):
 
             You have a task '{task['text']}' due on {task['date']}"""
             
-            agent_reply = client.chat_completion(
-                messages=[{"role": "user", "content": task_description}],
-                max_tokens=200,
-                stream=False,
-            )
+            try:
+                agent_reply = client.chat_completion(
+                    messages=[{"role": "user", "content": task_description}],
+                    max_tokens=200,
+                    stream=False,
+                )
+                procrastination_message = agent_reply.choices[0].message.content
+            except:
+                logging.info("Failed to load chat agent")
+                procrastination_message = "Unable to retrieve chat agent reply"
             
-            procrastination_message = agent_reply.choices[0].message.content
             procrastination_messages.append(procrastination_message)
             logging.info(f"Generated procrastination message for task '{task['text']}': {procrastination_message}")
     
@@ -181,4 +189,4 @@ def update_preferences():
 
 if __name__ == '__main__':
     logging.info("Starting Flask app...")
-    app.run(debug=True)
+    # app.run(debug=True)
