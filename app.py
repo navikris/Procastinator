@@ -5,13 +5,6 @@ import random
 import logging
 from huggingface_hub import InferenceClient
 import os
-access_token = os.environ.get('HF_TOKEN')
-
-client = InferenceClient(
-    model = "NousResearch/Hermes-3-Llama-3.1-8B",
-    token = access_token,
-    timeout = 60.0,
-)
 
 # Initialize Flask app
 app = Flask(__name__)
@@ -24,6 +17,16 @@ user_preferences = {"name": "John Doe", "email": "john@gmail.com"}
 # Logging setup
 logging.basicConfig(filename='app.log', level=logging.INFO, 
                     format='%(asctime)s - %(levelname)s - %(message)s')
+
+access_token = os.environ.get('HF_TOKEN')
+if access_token is None:    
+    logging.info("Huggingface auth token not found")
+
+client = InferenceClient(
+    model = "NousResearch/Hermes-3-Llama-3.1-8B",
+    token = access_token,
+    timeout = 60.0,
+)
 
 # Generate a unique numeric ID
 def generate_numeric_id():
@@ -70,7 +73,6 @@ def check_deadlines():
     return upcoming_tasks
 
 # Function to alert user using LLM procrastination assistant
-# Function to alert user using LLM procrastination assistant
 def alert_user(upcoming_tasks):
     procrastination_messages = []
 
@@ -88,13 +90,16 @@ def alert_user(upcoming_tasks):
 
             You have a task '{task['text']}' due on {task['date']}"""
             
-            agent_reply = client.chat_completion(
-                messages=[{"role": "user", "content": task_description}],
-                max_tokens=200,
-                stream=False,
-            )
-            
-            procrastination_message = agent_reply.choices[0].message.content
+            try:
+                agent_reply = client.chat_completion(
+                    messages=[{"role": "user", "content": task_description}],
+                    max_tokens=200,
+                    stream=False,
+                )
+                procrastination_message = agent_reply.choices[0].message.content
+            except:
+                logging.info("Failed to connect to chat client")
+                procrastination_message = "Unable to retrieve reply from chat agent"
             procrastination_messages.append(procrastination_message)
             logging.info(f"Generated procrastination message for task '{task['text']}': {procrastination_message}")
     
