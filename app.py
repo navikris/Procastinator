@@ -102,8 +102,12 @@ def alert_user(upcoming_tasks):
 
 
 # Home route, default to "My Day"
+# Home route, default to "My Day"
 @app.route('/')
 def home():
+    if 'user' not in session:
+        return redirect(url_for('login'))
+
     section = request.args.get('section', 'myDay')
     filtered_tasks = filter_tasks(section)
     # Check for upcoming deadlines and get procrastination messages
@@ -117,7 +121,32 @@ def home():
 
     logging.info(f"Rendering home page for section: {section}, tasks count: {len(filtered_tasks)}")
     return render_template('index.html', tasks=filtered_tasks, section=section,
-                           user_preferences=user, procrastination_messages=procrastination_messages)
+                           user=user, procrastination_messages=procrastination_messages)
+
+# Route to handle login
+@app.route('/login', methods=['GET', 'POST'])
+def login():
+    if request.method == 'POST':
+        username = request.form.get('name')
+        email = request.form.get('email')
+
+        if username and email:
+            session['user'] = username
+            session['email'] = email
+            logging.info(f"User logged in: {username}")
+            return redirect(url_for('home'))
+        else:
+            flash("Please provide a valid name and email.")
+            return redirect(url_for('login'))
+
+    return render_template('login.html')
+
+# Route to handle logout
+@app.route('/logout')
+def logout():
+    session.clear()
+    logging.info("User logged out.")
+    return redirect(url_for('login'))
 
 # Route to add a new task
 @app.route('/add_task', methods=['POST'])
@@ -179,6 +208,6 @@ def update_preferences():
 
     return redirect(url_for('home'))
 
-# if __name__ == '__main__':
-#     logging.info("Starting Flask app...")
-#     app.run(debug=True)
+if __name__ == '__main__':
+    logging.info("Starting Flask app...")
+    app.run(debug=True)
