@@ -114,17 +114,11 @@ def home():
     section = request.args.get('section', 'myDay')
     filtered_tasks = filter_tasks(section)
     # Check for upcoming deadlines and get procrastination messages
-    upcoming_tasks = check_deadlines()
-    if upcoming_tasks:
-        procrastination_messages = alert_user(upcoming_tasks)
-    else:
-        procrastination_messages = None
-
     user = session.get('user', 'guest')
 
     logging.info(f"Rendering home page for section: {section}, tasks count: {len(filtered_tasks)}")
     return render_template('index.html', tasks=filtered_tasks, section=section,
-                           user=user, procrastination_messages=procrastination_messages)
+                           user=user)
 
 
 # Route to display procrastination messages as a distraction
