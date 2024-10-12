@@ -88,13 +88,16 @@ def alert_user(upcoming_tasks):
 
             You have a task '{task['text']}' due on {task['date']}"""
             
-            agent_reply = client.chat_completion(
-                messages=[{"role": "user", "content": task_description}],
-                max_tokens=200,
-                stream=False,
-            )
-            
-            procrastination_message = agent_reply.choices[0].message.content
+            try:
+                agent_reply = client.chat_completion(
+                    messages=[{"role": "user", "content": task_description}],
+                    max_tokens=200,
+                    stream=False,
+                )
+                procrastination_message = agent_reply.choices[0].message.content
+            except:
+                logging.info("Failed to connet to chat client")
+                procrastination_message = "Unable to retrieve reply from chat agent"
             procrastination_messages.append(procrastination_message)
             logging.info(f"Generated procrastination message for task '{task['text']}': {procrastination_message}")
     
@@ -178,6 +181,18 @@ def update_preferences():
     logging.info(f"Updated user preferences: {session['user']}, {user_email}")
 
     return redirect(url_for('home'))
+
+# Route for handling the login page logic
+@app.route('/login', methods=['POST'])
+def login():
+    section = request.args.get('section', 'myDay')
+    # render_template('login.html', section=section)
+    username = request.form.get('username', 'guest')
+    user_email = request.form.get('email', 'guest@gmail.com')
+    session['user'] = username
+    session['email'] = user_email
+    logging.info(f"Updated user preferences: {session['user']}, {session['email']}")
+    return render_template('login.html', section=section)
 
 if __name__ == '__main__':
     logging.info("Starting Flask app...")

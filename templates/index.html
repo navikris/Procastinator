@@ -60,12 +60,21 @@
         {% endif %}
 
         <!-- User Preferences -->
+        <!-- User Preferences 
         <div class="user-preferences">
             <h2>User Profile</h2>
             <form action="{{ url_for('update_preferences') }}" method="POST">
                 <label>Name: <input type="text" name="name" value="{{ user_preferences.name }}"></label>
                 <label>Email: <input type="email" name="email" value="{{ user_preferences.email }}"></label>
                 <button type="submit">Update Profile</button>
+            </form>
+        </div> -->
+
+        <!-- Button to Login -->
+        <div class="user-preferences">
+            <h2>User Profile</h2>
+            <form action="{{ url_for('login') }}" method="POST">
+                <button type="submit">Login</button>
             </form>
         </div>
 

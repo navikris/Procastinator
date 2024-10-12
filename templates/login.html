@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Task Manager - {{ section.capitalize() }}</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+</head>
+<body>
+    <div class="container">
+        <!-- User Preferences -->
+        <div class="user-preferences">
+            <h2>Login/Sign-Up</h2>
+            <!--<form action="{{ url_for('update_preferences') }}" method="POST">-->
+            <form action="" method="POST">
+                <label>Username: <input type="text" name="username" value=""></label>
+                <label>Email: <input type="email" name="email" value=""></label>
+                <button type="submit">Login</button>
+            </form>
+        </div>
+    </div>
+</body>
+</html>
