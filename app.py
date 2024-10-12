@@ -105,8 +105,6 @@ def alert_user(upcoming_tasks):
     
     return procrastination_messages
 
-
-# Home route, default to "My Day"
 # Home route, default to "My Day"
 @app.route('/')
 def home():
@@ -127,6 +125,24 @@ def home():
     logging.info(f"Rendering home page for section: {section}, tasks count: {len(filtered_tasks)}")
     return render_template('index.html', tasks=filtered_tasks, section=section,
                            user=user, procrastination_messages=procrastination_messages)
+
+
+# Route to display procrastination messages as a distraction
+@app.route('/procrastination')
+def procrastination():
+    if 'user' not in session:
+        return redirect(url_for('login'))
+
+    user = session.get('user', 'guest')
+    upcoming_tasks = check_deadlines()
+
+    if upcoming_tasks:
+        procrastination_messages = alert_user(upcoming_tasks)
+        random_message = random.choice(procrastination_messages)
+    else:
+        random_message = "No tasks due soon! Relax a bit."
+
+    return render_template('procrastination.html', message=random_message)
 
 # Route to handle login
 @app.route('/login', methods=['GET', 'POST'])
@@ -204,14 +220,7 @@ def delete_all_tasks():
     logging.info(f"All tasks deleted for user {user}.")
     return redirect(url_for('home'))
 
-# Route to update user preferences
-@app.route('/update_preferences', methods=['POST'])
-def update_preferences():
-    session['user'] = request.form.get('name', 'guest')
-    user_email = request.form.get('email', 'guest@gmail.com')
-    logging.info(f"Updated user preferences: {session['user']}, {user_email}")
-
-    return redirect(url_for('home'))
+# Route to update user preference
 
 if __name__ == '__main__':
     logging.info("Starting Flask app...")
